@@ -1,5 +1,7 @@
 package com.github.san4ezuz.flightsposition;
 
+import lombok.NonNull;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -8,16 +10,12 @@ import org.springframework.web.reactive.function.client.WebClient;
 
 @EnableScheduling
 @Component
+@RequiredArgsConstructor
 public class PlaneFinderPoller {
     private WebClient client = WebClient.create("http://localhost:7634/flights");
-    private final RedisConnectionFactory connectionFactory;
 
+    @NonNull
     private final FlightRepository repository;
-
-    PlaneFinderPoller(RedisConnectionFactory connectionFactory, FlightRepository repository) {
-        this.connectionFactory = connectionFactory;
-        this.repository = repository;
-    }
 
     @Scheduled(fixedRate = 1000)
     private void pollPlanes() {
