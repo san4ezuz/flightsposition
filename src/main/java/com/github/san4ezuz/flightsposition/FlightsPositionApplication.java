@@ -15,14 +15,4 @@ public class FlightsPositionApplication {
     public static void main(String[] args) {
         SpringApplication.run(FlightsPositionApplication.class, args);
     }
-
-    @Bean
-    public RedisOperations<String, Flight> redisOperations(RedisConnectionFactory factory) {
-        Jackson2JsonRedisSerializer<Flight> serializer = new Jackson2JsonRedisSerializer<>(Flight.class);
-        RedisTemplate<String, Flight> template = new RedisTemplate<>();
-        template.setConnectionFactory(factory);
-        template.setDefaultSerializer(serializer);
-        template.setKeySerializer(new StringRedisSerializer());
-        return template;
-    }
 }

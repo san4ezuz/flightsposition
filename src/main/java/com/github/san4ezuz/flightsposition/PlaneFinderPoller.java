@@ -1,7 +1,6 @@
 package com.github.san4ezuz.flightsposition;
 
 import org.springframework.data.redis.connection.RedisConnectionFactory;
-import org.springframework.data.redis.core.RedisOperations;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
@@ -12,11 +11,12 @@ import org.springframework.web.reactive.function.client.WebClient;
 public class PlaneFinderPoller {
     private WebClient client = WebClient.create("http://localhost:7634/flights");
     private final RedisConnectionFactory connectionFactory;
-    private final RedisOperations<String, Flight> redisOperations;
 
-    PlaneFinderPoller(RedisConnectionFactory connectionFactory, RedisOperations<String, Flight> redisOperations) {
+    private final FlightRepository repository;
+
+    PlaneFinderPoller(RedisConnectionFactory connectionFactory, FlightRepository repository) {
         this.connectionFactory = connectionFactory;
-        this.redisOperations = redisOperations;
+        this.repository = repository;
     }
 
     @Scheduled(fixedRate = 1000)
@@ -27,11 +27,8 @@ public class PlaneFinderPoller {
                 .retrieve()
                 .bodyToFlux(Flight.class)
                 .toStream()
-                .forEach(fl -> redisOperations.opsForValue().set(fl.getIcao24(), fl));
+                .forEach(repository::save);
 
-        redisOperations.opsForValue()
-                .getOperations()
-                .keys("*")
-                .forEach(fl -> System.out.println(redisOperations.opsForValue().get(fl)));
+        repository.findAll().forEach(System.out::println);
     }
 }
