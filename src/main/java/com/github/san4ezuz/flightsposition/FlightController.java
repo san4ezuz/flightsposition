@@ -2,24 +2,22 @@ package com.github.san4ezuz.flightsposition;
 
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.redis.connection.RedisConnectionFactory;
-import org.springframework.scheduling.annotation.EnableScheduling;
-import org.springframework.scheduling.annotation.Scheduled;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.reactive.function.client.WebClient;
 
-@EnableScheduling
-@Component
+@Controller
 @RequiredArgsConstructor
-public class PlaneFinderPoller {
+public class FlightController {
     private WebClient client = WebClient.create("http://localhost:7634/flights");
 
     @NonNull
     private final FlightRepository repository;
 
-    @Scheduled(fixedRate = 1000)
-    private void pollPlanes() {
-        connectionFactory.getConnection().serverCommands().flushDb();
+    @GetMapping("/aircraft")
+    private String getCurrentFlights(Model model) {
+        repository.deleteAll();
 
         client.get()
                 .retrieve()
@@ -27,6 +25,7 @@ public class PlaneFinderPoller {
                 .toStream()
                 .forEach(repository::save);
 
-        repository.findAll().forEach(System.out::println);
+        model.addAttribute("currentFlights", repository.findAll());
+        return "positions";
     }
 }

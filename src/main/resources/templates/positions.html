@@ -1,0 +1,48 @@
+<!DOCTYPE HTML>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Position Report</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+</head>
+<body>
+<script type="text/javascript">
+    window.onload = setupRefresh;
+
+    function setupRefresh() {
+        setTimeout("refreshPage();", 5000); // refresh rate in milliseconds
+    }
+
+    function refreshPage() {
+        window.location = location.href;
+    }
+</script>
+<div class="positionlist" th:unless="${#lists.isEmpty(currentFlights)}">
+
+    <h2>Current flights</h2>
+
+    <table>
+        <thead>
+        <tr>
+            <th>icao24</th>
+            <th>Departure airport</th>
+            <th>Arrival airport</th>
+            <th>callsign</th>
+            <th>First seen time`</th>
+            <th>Last seen time</th>
+            <th></th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="ac : ${currentFlights}">
+            <td th:text="${ac.icao24}"></td>
+            <td th:text="${ac.estDepartureAirport}"></td>
+            <td th:text="${ac.estArrivalAirport}"></td>
+            <td th:text="${ac.callsign}"></td>
+            <td th:text="${ac.firstSeenTime}"></td>
+            <td th:text="${ac.lastSeenTime}"></td>
+        </tr>
+        </tbody>
+    </table>
+</div>
+</body>
+</html>
