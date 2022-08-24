@@ -1,8 +1,0 @@
-spring:
-  cloud:
-    stream:
-      bindings:
-        retrieveFlight-in-0:
-          destination: aircraftpositions
-          group: aircraftpositions
-          binder: rabbit
